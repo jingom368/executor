@@ -9,7 +9,7 @@ import { Mapper } from '@automapper/core';
 import { JobEntity } from './job-type/job.entity';
 
 @Injectable()
-export class JobProducerService {
+export class JobQueueService {
   constructor(
     @InjectFlowProducer('flowProducerName')
     private flowProducer: FlowProducerPro,
@@ -20,7 +20,7 @@ export class JobProducerService {
   async addJob(jobPayload: JobQueuePayload): Promise<string> {
     // const jobEntity = await this.entityMapper.payloadtoEntity(jobPayload);
     const jobEntity = this.mapper.map(jobPayload, JobQueuePayload, JobEntity);
-    console.log('jobEntity', jobEntity);
+    console.log('jobEntity', JSON.stringify(jobEntity, null, 2));
 
     // DB에 저장하는 작업
     await this.jobProducerRepository.create(jobEntity);
@@ -33,7 +33,10 @@ export class JobProducerService {
       opts: { jobId: jobPayload.jobIdx },
       children: jobPayload.childJobs.map((childJob, index) => ({
         name: `${index + 1}`,
-        data: { idx: childJob.childJobIdx, jobType: childJob.jobType },
+        data: {
+          jobType: childJob.jobType,
+          jobData: childJob.jobData,
+        },
         queueName: childJob.jobType,
         opts: {
           jobId: childJob.childJobIdx,

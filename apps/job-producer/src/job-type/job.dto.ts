@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
+import { JobType } from './job.type';
 
 export class JobDto {
   @IsString()
@@ -13,5 +14,5 @@ export class JobDto {
 
   @IsString()
   @IsNotEmpty()
-  processType: string;
+  processType: JobType;
 }

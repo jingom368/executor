@@ -16,6 +16,9 @@ import { EntityMapper } from './mapper/job.entity.mapper';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { JobProfile } from './mapper/job.profile';
+import { JobGroupService } from './job-producer.group.service';
+import { JobFactory } from './mapper/job.factory';
+import { JobQueueService } from './job-producer.queue';
 
 const queueRegistrations = Object.values(QueueAndJobType).map((queueName) => ({
   name: queueName,
@@ -63,10 +66,13 @@ const bullBoardFeatures = Object.values(QueueAndJobType).map((queueName) => ({
   controllers: [JobProducerController],
   providers: [
     JobProducerService,
+    JobGroupService,
     PayloadMapper,
     EntityMapper,
     JobProducerRepository,
+    JobQueueService,
     JobProfile,
+    JobFactory,
   ],
 })
 export class JobProducerModule {}

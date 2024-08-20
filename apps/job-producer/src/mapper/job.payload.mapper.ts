@@ -1,11 +1,11 @@
 import { ChildJobPayload } from '../job-type/job.child.payload';
 import { JobDto } from '../job-type/job.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { JobPayload } from '../job-type/job.payload';
+import { JobQueuePayload } from '../job-type/job.queue.payload';
 
 export class PayloadMapper {
-  async DtoToPayload(jobDto: JobDto): Promise<JobPayload> {
-    const jobPayload = new JobPayload();
+  async DtoToPayload(jobDto: JobDto): Promise<JobQueuePayload> {
+    const jobPayload = new JobQueuePayload();
     jobPayload.jobIdx = uuidv4(); // Generate a random UUID for jobIdx
     jobPayload.groupIdx = uuidv4(); // Generate a random UUID for groupIdx
     jobPayload.childJobs = jobDto.pages.map(() => {

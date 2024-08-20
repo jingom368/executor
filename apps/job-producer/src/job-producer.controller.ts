@@ -4,14 +4,20 @@ import { JobDto } from './job-type/job.dto';
 import { PayloadMapper } from './mapper/job.payload.mapper';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { JobPayload } from './job-type/job.payload';
+import { JobQueuePayload } from './job-type/job.queue.payload';
 import { JobProducerService } from './job-producer.service';
+import { CreateJobRequest } from './job-type/job.request';
+import { JobGroupService } from './job-producer.group.service';
+import { JobRequestPayload } from './job-type/job.request.payload';
+import { JobQueueService } from './job-producer.queue';
 
 @Controller('image-rendering')
 export class JobProducerController {
   constructor(
     private readonly jobProducerService: JobProducerService,
+    private readonly jobQueueService: JobQueueService,
     private readonly payloadMapper: PayloadMapper,
+    private readonly jobGroupService: JobGroupService,
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
@@ -20,18 +26,31 @@ export class JobProducerController {
   async createJob(@Body('createJobDto') createJobDto: JobDto): Promise<string> {
     // console.log('jobDTO', jobDTO);
     // const jobPayload = await this.payloadMapper.DtoToPayload(jobDTO);
-    const jobPayload = this.mapper.map(createJobDto, JobDto, JobPayload);
+    const jobPayload = this.mapper.map(createJobDto, JobDto, JobQueuePayload);
     console.log('jobPayload', jobPayload);
     return this.jobProducerService.addJob(jobPayload);
   }
 
   @Post('getJob')
-  async getJob(@Body('jobDTO') jobDto: JobDto): Promise<string> {
-    // console.log('jobDTO', jobDTO);
-    // const jobPayload = await this.payloadMapper.DtoToPayload(jobDTO);
-    const jobPayload = this.mapper.map(jobDto, JobDto, JobPayload);
-    console.log('jobPayload', jobPayload);
-    return this.jobProducerService.addJob(jobPayload);
+  async getJob(@Body('jobDTO') jobDto: JobDto): Promise<void> {
+    console.log('getJob', jobDto);
+  }
+
+  // 동적 vs 정적 고민 createJob, getJob
+  @Post('createJobRequest')
+  async createJobRequest(
+    @Body('createJobRequest')
+    createJobRequest: CreateJobRequest<JobRequestPayload>,
+  ): Promise<void> {
+    // const { jobType, jobRequestPayload } = createJobRequest;
+    const jobQueuePayload = await this.jobGroupService.createGroupJob(
+      createJobRequest,
+      // jobType,
+      // jobRequestPayload,
+    );
+    await this.jobQueueService.addJob(jobQueuePayload);
+    console.log('createJobRequest', createJobRequest);
+    console.log('jobQueuePayload', JSON.stringify(jobQueuePayload, null, 2));
   }
 }
 
