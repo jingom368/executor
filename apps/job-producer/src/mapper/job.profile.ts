@@ -8,14 +8,13 @@ import {
   MappingProfile,
 } from '@automapper/core';
 import { Injectable } from '@nestjs/common';
-import { JobDto } from '../job-type/job.dto';
-import { JobQueuePayload } from '../job-type/job.queue.payload';
-import { JobEntity } from '../job-type/job.entity';
-import { JobStatus } from '../job-type/job.status';
+import { JobQueuePayload } from '../job-type/queue.payload/job.queue.payload';
+import { JobEntity } from '../job-type/entity/job.entity';
+import { JobStatus } from '../job-type/entity/job.status';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateJobRequest } from '../job-type/job.request';
-import { JobRequestPayload } from '../job-type/job.request.payload';
-import { ImageRenderingJobQueuePayload } from '../job-type/image-rendering.job.queue.payload';
+import { CreateJobRequest } from '../job-type/request/job.request';
+import { JobRequestPayload } from '../job-type/request/job.request.payload';
+import { ImageRenderingJobQueuePayload } from '../job-type/queue.payload/image-rendering.job.queue.payload';
 
 @Injectable()
 export class JobProfile extends AutomapperProfile {
@@ -36,38 +35,12 @@ export class JobProfile extends AutomapperProfile {
 
   override get profile(): MappingProfile {
     return (mapper) => {
-      this.createJobDtoToJobQueuePayloadMap(mapper);
       this.createJobQueuePayloadToJobEntityMap(mapper);
 
       this.jobQueuePayloadMappings.forEach((jobQueuePayloadClass) => {
         this.createJobRequestToJobQueuePayloadMap(mapper, jobQueuePayloadClass);
       });
     };
-  }
-
-  private createJobDtoToJobQueuePayloadMap(mapper: Mapper): void {
-    createMap(
-      mapper,
-      JobDto,
-      JobQueuePayload,
-      forMember(
-        (dest) => dest.jobIdx,
-        mapFrom(() => uuidv4()),
-      ),
-      forMember(
-        (dest) => dest.groupIdx,
-        mapFrom(() => uuidv4()),
-      ),
-      forMember(
-        (dest) => dest.childJobs,
-        mapFrom((src) =>
-          src.pages.map(() => ({
-            childJobIdx: uuidv4(),
-            jobType: src.processType,
-          })),
-        ),
-      ),
-    );
   }
 
   private createJobQueuePayloadToJobEntityMap(mapper: Mapper): void {
@@ -85,7 +58,12 @@ export class JobProfile extends AutomapperProfile {
       ),
       forMember(
         (dest) => dest.childJobs,
-        mapFrom((src) => src.childJobs),
+        mapFrom((src) =>
+          src.childJobs.map((childJob) => ({
+            ...childJob,
+            childJobStatus: JobStatus.WATING, // childJob에 jobStatus 필드 추가
+          })),
+        ),
       ),
       forMember(
         (dest) => dest.createdAt,
@@ -123,8 +101,8 @@ export class JobProfile extends AutomapperProfile {
         mapFrom((src: CreateJobRequest<JobRequestPayload>) =>
           src.jobRequestPayload.pages.split(',').map(() => ({
             childJobIdx: uuidv4(),
-            jobType: src.jobType,
-            jobData: src.jobRequestPayload,
+            childJobType: src.jobType,
+            childJobData: src.jobRequestPayload,
           })),
         ),
       ),

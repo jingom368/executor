@@ -3,28 +3,25 @@ import { BullModule } from '@taskforcesh/nestjs-bullmq-pro';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-// import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { JobProducerController } from './job-producer.controller';
-import { JobProducerService } from './job-producer.service';
-import { QueueAndJobType } from './enums';
-import { PayloadMapper } from './mapper/job.payload.mapper';
+import { QueueType } from './job-type/queue/queue.type';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JobEntity } from './job-type/job.entity';
-import { JobEntitySchema } from './job-type/job.schema';
+import { JobEntity } from './job-type/entity/job.entity';
+import { JobEntitySchema } from './job-type/schema/job.schema';
 import { JobProducerRepository } from './job-producer.repository';
-import { EntityMapper } from './mapper/job.entity.mapper';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { JobProfile } from './mapper/job.profile';
 import { JobGroupService } from './job-producer.group.service';
-import { JobFactory } from './mapper/job.factory';
+import { JobGroupFactory } from './mapper/job.factory';
 import { JobQueueService } from './job-producer.queue';
+import { JobRepositoryUtil } from './util/job-producer.repository.util';
 
-const queueRegistrations = Object.values(QueueAndJobType).map((queueName) => ({
+const queueRegistrations = Object.values(QueueType).map((queueName) => ({
   name: queueName,
 }));
 
-const bullBoardFeatures = Object.values(QueueAndJobType).map((queueName) => ({
+const bullBoardFeatures = Object.values(QueueType).map((queueName) => ({
   name: queueName,
   adapter: BullMQAdapter,
 }));
@@ -65,14 +62,13 @@ const bullBoardFeatures = Object.values(QueueAndJobType).map((queueName) => ({
   ],
   controllers: [JobProducerController],
   providers: [
-    JobProducerService,
     JobGroupService,
-    PayloadMapper,
-    EntityMapper,
     JobProducerRepository,
     JobQueueService,
     JobProfile,
-    JobFactory,
+    JobGroupFactory,
+    JobRepositoryUtil,
   ],
+  exports: [JobProducerRepository],
 })
 export class JobProducerModule {}

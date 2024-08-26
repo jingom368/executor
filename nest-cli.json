@@ -25,6 +25,7 @@
       "entryFile": "main",
       "sourceRoot": "apps/job-processor/src",
       "compilerOptions": {
+        "webpack": false,
         "tsConfigPath": "apps/job-processor/tsconfig.app.json"
       }
     },

@@ -1,8 +1,13 @@
 import { NestFactory } from '@nestjs/core';
-import { JobExecutorModule } from './job-executor.module';
+import { JobProcessorModule } from './job-processor.module';
+import { JobPro } from '@taskforcesh/bullmq-pro';
+import { JobProcessorService } from './job-processor.service';
 
-async function bootstrap() {
-  const app = await NestFactory.create(JobExecutorModule);
-  await app.listen(3000);
+async function bootstrap(job: JobPro) {
+  const app = await NestFactory.createApplicationContext(JobProcessorModule);
+  const jobProcessorService = app.get(JobProcessorService);
+
+  await jobProcessorService.processJob(job);
+  await app.close();
 }
-bootstrap();
+export default bootstrap;

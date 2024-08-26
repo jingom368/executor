@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ImageRenderingJobQueuePayload } from '../job-type/image-rendering.job.queue.payload';
-import { JobQueuePayload } from '../job-type/job.queue.payload';
+import { ImageRenderingJobQueuePayload } from '../job-type/queue.payload/image-rendering.job.queue.payload';
+import { JobQueuePayload } from '../job-type/queue.payload/job.queue.payload';
+import { JobType } from '../job-type/job.type';
 
 @Injectable()
-export class JobFactory {
-  get(jobType: string): new () => JobQueuePayload {
+export class JobGroupFactory {
+  get(jobType: JobType): new () => JobQueuePayload {
     switch (jobType) {
       case 'IMAGE_RENDERING':
         return ImageRenderingJobQueuePayload;

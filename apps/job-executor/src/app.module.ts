@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { JobConsumerModule } from './worker/job-consumer.module';
 
 @Module({
-  imports: [],
+  imports: [JobConsumerModule],
   controllers: [],
   providers: [],
 })

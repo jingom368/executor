@@ -1,26 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { JobRequestPayload } from './job-type/job.request.payload';
+import { JobRequestPayload } from './job-type/request/job.request.payload';
 import { Mapper } from '@automapper/core';
 import { InjectMapper } from '@automapper/nestjs';
-import { CreateJobRequest } from './job-type/job.request';
-import { JobQueuePayload } from './job-type/job.queue.payload';
-import { JobFactory } from './mapper/job.factory';
+import { CreateJobRequest } from './job-type/request/job.request';
+import { JobQueuePayload } from './job-type/queue.payload/job.queue.payload';
+import { JobGroupFactory } from './mapper/job.factory';
 
 @Injectable()
 export class JobGroupService {
   constructor(
     @InjectMapper() private readonly mapper: Mapper,
-    private readonly jobFactory: JobFactory,
+    private readonly jobGroupFactory: JobGroupFactory,
   ) {}
-  async createGroupJob(
+  createGroupJob(
     createJobRequest: CreateJobRequest<JobRequestPayload>,
     // jobType: string,
     // jobRequestPayload: JobRequestPayload,
-  ): Promise<JobQueuePayload> {
+  ): JobQueuePayload {
     const jobQueuePayload: JobQueuePayload = this.mapper.map(
       createJobRequest,
       CreateJobRequest,
-      this.jobFactory.get(createJobRequest.jobType),
+      this.jobGroupFactory.get(createJobRequest.jobType),
     );
     return jobQueuePayload;
   }

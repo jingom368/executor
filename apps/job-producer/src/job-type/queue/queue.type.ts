@@ -1,4 +1,4 @@
-export enum QueueAndJobType {
+export enum QueueType {
   IMAGE_RENDERING = 'IMAGE_RENDERING',
   ImageRendering = 'ImageRendering',
   ColorRendering = 'ColorRendering',

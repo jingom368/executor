@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { JobQueuePayload } from './job-type/job.queue.payload';
+import { JobQueuePayload } from './job-type/queue.payload/job.queue.payload';
 import { InjectFlowProducer } from '@taskforcesh/nestjs-bullmq-pro';
 import { FlowProducerPro } from '@taskforcesh/bullmq-pro';
 import { JobProducerRepository } from './job-producer.repository';
-import { EntityMapper } from './mapper/job.entity.mapper';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { JobEntity } from './job-type/job.entity';
+import { JobEntity } from './job-type/entity/job.entity';
 
 @Injectable()
 export class JobQueueService {
@@ -14,13 +13,12 @@ export class JobQueueService {
     @InjectFlowProducer('flowProducerName')
     private flowProducer: FlowProducerPro,
     private readonly jobProducerRepository: JobProducerRepository,
-    private readonly entityMapper: EntityMapper,
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
   async addJob(jobPayload: JobQueuePayload): Promise<string> {
-    // const jobEntity = await this.entityMapper.payloadtoEntity(jobPayload);
+    // console.log('jobPayload', JSON.stringify(jobPayload, null, 2));
     const jobEntity = this.mapper.map(jobPayload, JobQueuePayload, JobEntity);
-    console.log('jobEntity', JSON.stringify(jobEntity, null, 2));
+    // console.log('jobEntity', JSON.stringify(jobEntity, null, 2));
 
     // DB에 저장하는 작업
     await this.jobProducerRepository.create(jobEntity);
@@ -34,10 +32,10 @@ export class JobQueueService {
       children: jobPayload.childJobs.map((childJob, index) => ({
         name: `${index + 1}`,
         data: {
-          jobType: childJob.jobType,
-          jobData: childJob.jobData,
+          jobType: childJob.childJobType,
+          jobData: childJob.childJobData,
         },
-        queueName: childJob.jobType,
+        queueName: childJob.childJobType,
         opts: {
           jobId: childJob.childJobIdx,
         },

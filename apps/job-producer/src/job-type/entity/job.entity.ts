@@ -1,8 +1,7 @@
 // job.entity.ts
 import { Prop, Schema } from '@nestjs/mongoose';
-import { Schema as MongooseSchema } from 'mongoose';
-import { ChildJobPayload } from './job.child.payload';
 import { JobStatus } from './job.status';
+import { ChildJobEntity } from './job.child.entity';
 
 @Schema()
 export class JobEntity {
@@ -13,16 +12,10 @@ export class JobEntity {
   groupIdx: string;
 
   @Prop({
-    type: [
-      {
-        childJobIdx: String,
-        jobType: String,
-        jobData: MongooseSchema.Types.Mixed,
-      },
-    ],
+    type: [ChildJobEntity], // ChildJobEntity 사용
     required: true,
   })
-  childJobs: ChildJobPayload[];
+  childJobs: ChildJobEntity[];
 
   @Prop({ required: true })
   createdAt: Date;
