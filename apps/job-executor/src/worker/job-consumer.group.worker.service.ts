@@ -9,7 +9,7 @@ import {
 import { join, resolve } from 'path';
 
 @Module({})
-export class JobWorkerService implements OnModuleInit {
+export class JobGroupWorkerService implements OnModuleInit {
   constructor(private readonly jobProducerRepository: JobProducerRepository) {}
 
   private worker: WorkerPro;
@@ -36,11 +36,11 @@ export class JobWorkerService implements OnModuleInit {
   }
 
   private createQueuePro(): void {
-    this.queuePro = new QueuePro('IMAGE_RENDERING');
+    this.queuePro = new QueuePro('jobQueue');
   }
 
   private async setGlobalConcurrency(): Promise<void> {
-    await this.queuePro.setGlobalConcurrency(2);
+    await this.queuePro.setGlobalConcurrency(5);
   }
 
   private getConnectionOptions(): ConnectionOptions {
@@ -52,7 +52,7 @@ export class JobWorkerService implements OnModuleInit {
 
   private getProcessorFilePath(): string {
     const baseDir = resolve(__dirname, '../job-processor');
-    const processorFilePath = join(baseDir, 'main.js');
+    const processorFilePath = join(baseDir, 'group-main.js');
     // console.log('processorFilePath', processorFilePath);
     return processorFilePath;
   }
@@ -61,9 +61,9 @@ export class JobWorkerService implements OnModuleInit {
     processorFile: string,
     connectionOptions: ConnectionOptions,
   ): void {
-    this.worker = new WorkerPro('IMAGE_RENDERING', processorFile, {
+    this.worker = new WorkerPro('GROUP_IMAGE_RENDERING', processorFile, {
       connection: connectionOptions,
-      concurrency: 2,
+      concurrency: 5,
       useWorkerThreads: false,
       ttl: 5000,
     });
@@ -78,11 +78,11 @@ export class JobWorkerService implements OnModuleInit {
         childJobId,
         JobStatus.COMPLETED,
       );
-      console.log(`Job ${job.id} completed!`);
+      console.log(`Group job ${job.id} completed!`);
     });
 
     this.worker.on('failed', async (job, err) => {
-      console.error(`Job ${job.id} failed with error ${err.message}`);
+      console.error(`Group job ${job.id} failed with error ${err.message}`);
     });
 
     this.worker.on('active', (job) => {
@@ -93,7 +93,7 @@ export class JobWorkerService implements OnModuleInit {
         childJobId,
         JobStatus.IN_PROGRESS,
       );
-      console.log(`Job ${job.id} is now active!`);
+      console.log(`Group job ${job.id} is now active!`);
     });
   }
 }

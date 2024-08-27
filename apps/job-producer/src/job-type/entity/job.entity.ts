@@ -17,12 +17,12 @@ export class JobEntity {
   })
   childJobs: ChildJobEntity[];
 
+  @Prop({ required: true, enum: JobStatus, type: String })
+  status: JobStatus;
+
   @Prop({ required: true })
   createdAt: Date;
 
   @Prop({ required: true })
   updatedAt: Date;
-
-  @Prop({ required: true, enum: JobStatus, type: String })
-  status: JobStatus;
 }

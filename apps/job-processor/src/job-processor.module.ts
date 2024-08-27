@@ -1,16 +1,17 @@
 // 되는 코드 - nestJS
 import { Module } from '@nestjs/common';
 import { JobProcessorService } from './job-processor.service';
-import { ImageRenderingJobOutput } from './job-processor/job-output';
-import { ImageRenderingJobProcessor } from './job-processor/image-rendering/image-rendering-job.processor';
+// import { ImageRenderingJobOutput } from './job-processor/job-output';
+// import { ImageRenderingJobProcessor } from './job-processor/image-rendering/image-rendering-job.processor';
+import { ProcessorModule } from './module-loader/processor.module';
+import { processorFactoryProvider } from './module-loader/processor-factory.provider';
+import { JobUtil } from './job-processor/job-processor.util';
 
 @Module({
+  imports: [ProcessorModule.forRootAsync()],
   controllers: [],
-  providers: [
-    JobProcessorService,
-    ImageRenderingJobOutput,
-    ImageRenderingJobProcessor,
-  ],
+  providers: [JobProcessorService, processorFactoryProvider, JobUtil],
+  exports: [],
 })
 export class JobProcessorModule {}
 

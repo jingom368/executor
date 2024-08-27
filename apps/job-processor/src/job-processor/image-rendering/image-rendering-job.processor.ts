@@ -2,22 +2,41 @@ import { JobProcessor } from '../job.processor';
 import { JobRegister } from '../job-processor.decorator';
 import { ImageRenderingJobOutput, JobOutput } from '../job-output';
 import { Injectable } from '@nestjs/common';
+import { JobPro } from '@taskforcesh/bullmq-pro';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 @JobRegister('IMAGE_RENDERING')
-export class ImageRenderingJobProcessor extends JobProcessor<any, JobOutput> {
+export class IMAGE_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
   constructor(
     private readonly imageRenderingJobOutput: ImageRenderingJobOutput,
   ) {
     super();
-    if (!this.imageRenderingJobOutput) {
-      throw new Error('ImageRenderingJobOutput is not initialized');
-    }
   }
-  public override async processJob(): Promise<any> {
-    // return Promise.resolve('ImageRenderingJobProcessor.processJob done');
+  public override async processJob(job: JobPro): Promise<any> {
+    const jobId = job.opts.jobId;
+    const filePath = path.resolve(__dirname, '..', 's3', `${jobId}.jpg`);
+
+    try {
+      this.createFile(filePath, `${jobId}.jpg`);
+    } catch (error) {
+      throw new Error(`Error creating file, error`);
+    }
+
     return new Promise((resolve) => {
-      setTimeout(() => resolve(this.imageRenderingJobOutput), 5000);
+      setTimeout(() => resolve(this.imageRenderingJobOutput), 1000);
     });
+  }
+
+  private createFile(filePath: string, content: string): void {
+    // 폴더가 존재하지 않으면 생성
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    // 파일 생성 로직 (예: 빈 파일 생성)
+    fs.writeFileSync(filePath, content);
   }
 }
