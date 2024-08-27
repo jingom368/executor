@@ -5,12 +5,11 @@ import { JobProcessorService } from './job-processor.service';
 // import { ImageRenderingJobProcessor } from './job-processor/image-rendering/image-rendering-job.processor';
 import { ProcessorModule } from './module-loader/processor.module';
 import { processorFactoryProvider } from './module-loader/processor-factory.provider';
-import { JobUtil } from './job-processor/job-processor.util';
 
 @Module({
   imports: [ProcessorModule.forRootAsync()],
   controllers: [],
-  providers: [JobProcessorService, processorFactoryProvider, JobUtil],
+  providers: [JobProcessorService, processorFactoryProvider],
   exports: [],
 })
 export class JobProcessorModule {}

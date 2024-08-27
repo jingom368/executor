@@ -1,5 +1,5 @@
 import { IsEnum, IsObject, IsString } from 'class-validator';
-import { JobType } from '../job.type';
+import { JobType } from '../job/job.type';
 
 export class ChildJobPayload {
   @IsString()

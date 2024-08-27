@@ -1,12 +1,10 @@
 import { JobProcessor } from '../job.processor';
 import { JobRegister } from '../job-processor.decorator';
 import { ImageRenderingJobOutput, JobOutput } from '../job-output';
-import { Injectable } from '@nestjs/common';
 import { JobPro } from '@taskforcesh/bullmq-pro';
 import * as fs from 'fs';
 import * as path from 'path';
 
-@Injectable()
 @JobRegister('IMAGE_RENDERING')
 export class IMAGE_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
   constructor(

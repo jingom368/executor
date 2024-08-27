@@ -11,12 +11,12 @@ export abstract class JobProcessor<
   constructor() {}
   protected abstract processJob(job: JobPro<INPUT, OUTPUT>): Promise<OUTPUT>;
 
-  async getJobId(job: JobPro): Promise<string> {
-    return job.opts.jobId;
-  }
-
-  async getJobType(job: JobPro): Promise<string> {
-    return job.data.jobType;
+  private async getJobDetails(
+    job: JobPro,
+  ): Promise<{ jobId: string; jobType: string }> {
+    const jobId = job.opts.jobId;
+    const jobType = job.data.jobType;
+    return { jobId, jobType };
   }
 
   private async uploadFile(jobId: string, output: OUTPUT): Promise<string> {
@@ -29,10 +29,9 @@ export abstract class JobProcessor<
 
   public async process(job: JobPro<INPUT, OUTPUT>): Promise<OUTPUT> {
     const output: OUTPUT = await this.processJob(job);
-    const jobId = await this.getJobId(job);
-    const jobType = await this.getJobType(job);
+    const { jobId, jobType } = await this.getJobDetails(job);
     const uploadedFilePath = await this.uploadFile(jobId, output);
-    await output.uploadToS3(jobId, jobType, uploadedFilePath);
+    // await output.uploadToS3(jobId, jobType, uploadedFilePath);
     return output;
   }
 }

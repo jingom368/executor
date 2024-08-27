@@ -1,6 +1,6 @@
 import { Prop, Schema } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
-import { JobType } from '../job.type';
+import { JobType } from '../job/job.type';
 import { JobStatus } from './job.status';
 
 @Schema()

@@ -1,6 +1,6 @@
 import { IsEnum, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { JobType } from '../job.type';
+import { JobType } from '../job/job.type';
 import { JobRequestPayload } from './job.request.payload';
 
 export class CreateJobRequest<JobRequestPayload> {

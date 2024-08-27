@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ImageRenderingJobQueuePayload } from '../job-type/queue.payload/image-rendering.job.queue.payload';
 import { JobQueuePayload } from '../job-type/queue.payload/job.queue.payload';
-import { JobType } from '../job-type/job.type';
+import { JobType } from '../job-type/job/job.type';
 
 @Injectable()
 export class JobGroupFactory {

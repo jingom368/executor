@@ -7,7 +7,8 @@ async function bootstrap(job: JobPro) {
   const app = await NestFactory.createApplicationContext(JobProcessorModule);
   const jobProcessorService = app.get(JobProcessorService);
 
-  await jobProcessorService.processJob(job);
+  const result = await jobProcessorService.processJob(job);
   await app.close();
+  return result;
 }
 export default bootstrap;
