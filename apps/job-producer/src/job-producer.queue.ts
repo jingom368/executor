@@ -25,10 +25,14 @@ export class JobQueueService {
 
     // 큐에 넣는 작업
     await this.flowProducer.add({
-      name: 'transcode',
+      name: 'jobType',
       queueName: 'jobQueue',
-      data: { idx: jobPayload.jobIdx, group: jobPayload.groupIdx },
-      opts: { jobId: jobPayload.jobIdx },
+      data: {
+        idx: jobPayload.jobId,
+        group: jobPayload.groupId,
+        jobData: jobPayload.jobData,
+      },
+      opts: { jobId: jobPayload.jobId },
       children: jobPayload.childJobs.map((childJob, index) => ({
         name: `${index + 1}`,
         data: {
@@ -37,11 +41,11 @@ export class JobQueueService {
         },
         queueName: childJob.childJobType,
         opts: {
-          jobId: childJob.childJobIdx,
+          jobId: childJob.childJobId,
         },
       })),
     });
 
-    return jobPayload.jobIdx;
+    return jobPayload.jobId;
   }
 }

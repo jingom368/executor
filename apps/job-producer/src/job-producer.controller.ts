@@ -6,6 +6,7 @@ import { CreateJobRequest } from './job-type/request/job.request';
 import { JobGroupService } from './job-producer.group.service';
 import { JobRequestPayload } from './job-type/request/job.request.payload';
 import { JobQueueService } from './job-producer.queue';
+import { JobGroupParams } from './job-type/params/job.group.params';
 
 @Controller('image-rendering')
 export class JobProducerController {
@@ -18,18 +19,17 @@ export class JobProducerController {
   // 동적 vs 정적 고민 createJob, getJob
   @Post('createJobRequest')
   async createJobRequest<T extends JobRequestPayload>(
-    @Body('createJobRequest')
-    createJobRequest: CreateJobRequest<T>,
+    @Body() createJobRequest: CreateJobRequest<T>,
   ): Promise<void> {
-    // const { jobType, jobRequestPayload } = createJobRequest;
-    // createJobRequest -> decorator -> 쓸수있는 무언가 mapping 구현체 함수에서 하게 하고
-    // service에서 쓸 수 있는 모델로 바꿔서 전달
-    // 클래스 다이어그램을 파악하는 정도에서 작성
-    const jobQueuePayload = await this.jobGroupService.createGroupJob(
+    const jobGroupParams = this.mapper.map(
       createJobRequest,
-      // jobType,
-      // jobRequestPayload,
+      CreateJobRequest,
+      JobGroupParams,
     );
+
+    const jobQueuePayload =
+      await this.jobGroupService.createJobQueuePayload(jobGroupParams);
+
     await this.jobQueueService.addJob(jobQueuePayload);
     // console.log('createJobRequest', createJobRequest);
     // console.log('jobQueuePayload', JSON.stringify(jobQueuePayload, null, 2));

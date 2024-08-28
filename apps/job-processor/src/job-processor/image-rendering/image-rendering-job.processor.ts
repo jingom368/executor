@@ -14,7 +14,15 @@ export class IMAGE_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
   }
   public override async processJob(job: JobPro): Promise<any> {
     const jobId = job.opts.jobId;
-    const filePath = path.resolve(__dirname, '..', 's3', `${jobId}.jpg`);
+    // 프로젝트 루트 경로 계산
+    const rootDir = process.cwd();
+
+    // assets 디렉토리 경로 생성
+    const assetsDir = path.join(rootDir, 'assets');
+
+    // 파일 경로 설정
+    const filePath = path.join(assetsDir, `s3/${jobId}.jpg`);
+    console.log('filePath', filePath);
 
     try {
       this.createFile(filePath, `${jobId}.jpg`);

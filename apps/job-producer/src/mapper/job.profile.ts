@@ -11,10 +11,10 @@ import { Injectable } from '@nestjs/common';
 import { JobQueuePayload } from '../job-type/queue.payload/job.queue.payload';
 import { JobEntity } from '../job-type/entity/job.entity';
 import { JobStatus } from '../job-type/entity/job.status';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateJobRequest } from '../job-type/request/job.request';
 import { JobRequestPayload } from '../job-type/request/job.request.payload';
 import { ImageRenderingJobQueuePayload } from '../job-type/queue.payload/image-rendering.job.queue.payload';
+import { JobGroupParams } from '../job-type/params/job.group.params';
 
 @Injectable()
 export class JobProfile extends AutomapperProfile {
@@ -37,9 +37,7 @@ export class JobProfile extends AutomapperProfile {
     return (mapper) => {
       this.createJobQueuePayloadToJobEntityMap(mapper);
 
-      this.jobQueuePayloadMappings.forEach((jobQueuePayloadClass) => {
-        this.createJobRequestToJobQueuePayloadMap(mapper, jobQueuePayloadClass);
-      });
+      this.createJobRequestToJobGroupParamsMap(mapper); // 추가된 매핑
     };
   }
 
@@ -50,11 +48,11 @@ export class JobProfile extends AutomapperProfile {
       JobEntity,
       forMember(
         (dest) => dest.jobIdx,
-        mapFrom((src) => src.jobIdx),
+        mapFrom((src) => src.jobId),
       ),
       forMember(
         (dest) => dest.groupIdx,
-        mapFrom((src) => src.groupIdx),
+        mapFrom((src) => src.groupId),
       ),
       forMember(
         (dest) => dest.childJobs,
@@ -80,31 +78,87 @@ export class JobProfile extends AutomapperProfile {
     );
   }
 
-  private createJobRequestToJobQueuePayloadMap(
-    mapper: Mapper,
-    jobQueuePayloadClass: new () => JobQueuePayload,
-  ): void {
+  // private createJobRequestToJobQueuePayloadMap(
+  //   mapper: Mapper,
+  //   jobQueuePayloadClass: new () => JobQueuePayload,
+  // ): void {
+  //   createMap(
+  //     mapper,
+  //     CreateJobRequest,
+  //     jobQueuePayloadClass,
+  //     forMember(
+  //       (dest) => dest.jobId,
+  //       mapFrom(() => uuidv4()),
+  //     ),
+  //     forMember(
+  //       (dest) => dest.groupId,
+  //       mapFrom(() => uuidv4()),
+  //     ),
+  //     forMember(
+  //       (dest) => dest.childJobs,
+  //       mapFrom((src: CreateJobRequest<JobRequestPayload>) =>
+  //         src.jobRequestPayload.pages.split(',').map(() => ({
+  //           childJobId: uuidv4(),
+  //           childJobType: src.jobType,
+  //           childJobData: src.jobRequestPayload,
+  //         })),
+  //       ),
+  //     ),
+  //     forMember(
+  //       (dest) => dest.jobData,
+  //       mapFrom((src) => src.jobRequestPayload),
+  //     ),
+  //   );
+  // }
+
+  private createJobRequestToJobGroupParamsMap(mapper: Mapper): void {
     createMap(
       mapper,
-      CreateJobRequest,
-      jobQueuePayloadClass,
+      CreateJobRequest<JobRequestPayload>,
+      JobGroupParams,
       forMember(
-        (dest) => dest.jobIdx,
-        mapFrom(() => uuidv4()),
+        (dest) => dest.jobType,
+        mapFrom((src) => src.jobType),
       ),
       forMember(
-        (dest) => dest.groupIdx,
-        mapFrom(() => uuidv4()),
+        (dest) => dest.designHistoryIndex,
+        mapFrom((src) => src.jobRequestPayload.designHistoryIndex),
       ),
       forMember(
-        (dest) => dest.childJobs,
-        mapFrom((src: CreateJobRequest<JobRequestPayload>) =>
-          src.jobRequestPayload.pages.split(',').map(() => ({
-            childJobIdx: uuidv4(),
-            childJobType: src.jobType,
-            childJobData: src.jobRequestPayload,
-          })),
-        ),
+        (dest) => dest.designIndex,
+        mapFrom((src) => src.jobRequestPayload.designIndex),
+      ),
+      forMember(
+        (dest) => dest.designName,
+        mapFrom((src) => src.jobRequestPayload.designName),
+      ),
+      forMember(
+        (dest) => dest.docSize,
+        mapFrom((src) => src.jobRequestPayload.docSize),
+      ),
+      forMember(
+        (dest) => dest.dpi,
+        mapFrom((src) => src.jobRequestPayload.dpi),
+      ),
+      forMember(
+        (dest) => dest.measure,
+        mapFrom((src) => src.jobRequestPayload.measure),
+      ),
+      forMember(
+        (dest) => dest.imgCombine,
+        mapFrom((src) => src.jobRequestPayload.imgCombine),
+      ),
+      forMember(
+        (dest) => dest.extension,
+        mapFrom((src) => src.jobRequestPayload.extension),
+      ),
+      forMember(
+        (dest) => dest.pages,
+        mapFrom((src) => src.jobRequestPayload.pages),
+      ),
+      forMember(
+        (dest) => dest.zip,
+        mapFrom((src) => src.jobRequestPayload.zip),
       ),
     );
   }

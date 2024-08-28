@@ -22,8 +22,8 @@ export class JobRepositoryUtil {
     return job;
   }
 
-  async findChildJobById(job: JobEntity, childJobIdx: string) {
-    const childJob = job.childJobs.find((cj) => cj.childJobIdx === childJobIdx);
+  async findChildJobById(job: JobEntity, childJobId: string) {
+    const childJob = job.childJobs.find((cj) => cj.childJobId === childJobId);
     if (!childJob) {
       throw new Error(this.CHILD_JOB_NOT_FOUND_ERROR);
     }

@@ -35,11 +35,7 @@ export class S3Util {
     });
   }
 
-  private createFileStream(filePath: string): fs.ReadStream {
-    return fs.createReadStream(filePath);
-  }
-
-  private createUploadParams(
+  public createUploadParams(
     jobId: string,
     jobType: string,
     fileStream: fs.ReadStream,
@@ -55,23 +51,7 @@ export class S3Util {
     };
   }
 
-  private async executeS3Upload(command: PutObjectCommand): Promise<void> {
+  public async executeS3Upload(command: PutObjectCommand): Promise<void> {
     await this.s3Client.send(command);
-  }
-
-  public async uploadFileToS3(
-    jobId: string,
-    jobType: string,
-    filePath: string,
-  ): Promise<void> {
-    try {
-      console.log('Uploading file to S3:', filePath);
-      const fileStream = this.createFileStream(filePath);
-      const uploadParams = this.createUploadParams(jobId, jobType, fileStream);
-      const command = new PutObjectCommand(uploadParams);
-      await this.executeS3Upload(command);
-    } catch (err) {
-      throw new Error(`Error uploading file to S3: ${err.message}`);
-    }
   }
 }

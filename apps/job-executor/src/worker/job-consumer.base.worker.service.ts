@@ -1,5 +1,6 @@
+import { S3Service } from '@job-executor/s3/s3.service';
+import { FileUtil } from '@job-executor/util/file.util';
 import { JobProducerRepository } from '@job-producer/job-producer.repository';
-import { JobStatus } from '@job-producer/job-type/entity/job.status';
 import { OnModuleInit } from '@nestjs/common';
 import {
   QueuePro,
@@ -14,6 +15,8 @@ export abstract class BaseWorkerService implements OnModuleInit {
 
   constructor(
     protected readonly jobProducerRepository: JobProducerRepository,
+    protected readonly s3Service: S3Service,
+    protected readonly fileUtil: FileUtil,
   ) {}
 
   async onModuleInit() {
@@ -68,31 +71,25 @@ export abstract class BaseWorkerService implements OnModuleInit {
   }
 
   private setupWorkerEvents(): void {
-    this.worker.on('completed', async (job, returnValue) => {
-      const parentId = job.opts.parent.id;
-      const childJobId = job.opts.jobId;
-      this.jobProducerRepository.updateChildJobStatus(
-        parentId,
-        childJobId,
-        JobStatus.COMPLETED,
-      );
-      console.log('returnValue', returnValue);
+    this.worker.on('completed', async (job: JobPro, returnValue) => {
       console.log(`Job ${job.id} completed!`);
+      await this.onJobCompleted(job, returnValue);
     });
 
-    this.worker.on('failed', async (job, err) => {
-      console.error(`Job ${job.id} failed with error ${err.message}`);
+    this.worker.on('failed', async (job: JobPro, err) => {
+      await this.onJobFailed(job, err);
     });
 
-    this.worker.on('active', (job) => {
-      const parentId = job.opts.parent.id;
-      const childJobId = job.opts.jobId;
-      this.jobProducerRepository.updateChildJobStatus(
-        parentId,
-        childJobId,
-        JobStatus.IN_PROGRESS,
-      );
+    this.worker.on('active', (job: JobPro) => {
       console.log(`Job ${job.id} is now active!`);
+      this.onJobActive(job);
     });
   }
+
+  protected abstract onJobCompleted(
+    job: JobPro,
+    returnValue: any,
+  ): Promise<void>;
+  protected abstract onJobFailed(job: JobPro, err: Error): Promise<void>;
+  protected abstract onJobActive(job: JobPro): void;
 }

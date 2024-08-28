@@ -1,8 +1,8 @@
 import { IsString, IsBoolean, IsNumber } from 'class-validator';
 
 export class JobRequestPayload {
-  @IsNumber()
-  public backgroundOpacity: number;
+  @IsBoolean()
+  public backgroundTransparent: boolean;
 
   @IsNumber()
   public designHistoryIndex: number;
@@ -11,7 +11,7 @@ export class JobRequestPayload {
   public designIndex: number;
 
   @IsString()
-  public designname: string;
+  public designName: string;
 
   @IsString()
   public docSize: string;
@@ -25,17 +25,11 @@ export class JobRequestPayload {
   @IsBoolean()
   public imgCombine: boolean;
 
-  @IsBoolean()
-  public includePageLink: boolean;
-
   @IsString()
   public measure: string;
 
   @IsString()
   public pages: string;
-
-  @IsBoolean()
-  public rasterize: boolean;
 
   @IsBoolean()
   public zip: boolean;

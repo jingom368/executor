@@ -16,6 +16,8 @@ import { JobGroupService } from './job-producer.group.service';
 import { JobGroupFactory } from './mapper/job.factory';
 import { JobQueueService } from './job-producer.queue';
 import { JobRepositoryUtil } from './util/job-producer.repository.util';
+import { HttpModule } from '@nestjs/axios';
+import { DesignApiService } from './api/design.api.service';
 
 const queueRegistrations = Object.values(QueueType).map((queueName) => ({
   name: queueName,
@@ -28,11 +30,12 @@ const bullBoardFeatures = Object.values(QueueType).map((queueName) => ({
 
 @Module({
   imports: [
+    HttpModule,
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
     MongooseModule.forRoot(
-      'mongodb+srv://jujang:2oV4VItJZB7MnJEA@cluster0.ftxaquc.mongodb.net',
+      'mongodb+srv://jujang:y2lvHGXxLwFnjWUA@cluster0.ftxaquc.mongodb.net',
     ),
     MongooseModule.forFeature([
       { name: JobEntity.name, schema: JobEntitySchema },
@@ -68,6 +71,7 @@ const bullBoardFeatures = Object.values(QueueType).map((queueName) => ({
     JobProfile,
     JobGroupFactory,
     JobRepositoryUtil,
+    DesignApiService,
   ],
   exports: [JobProducerRepository],
 })

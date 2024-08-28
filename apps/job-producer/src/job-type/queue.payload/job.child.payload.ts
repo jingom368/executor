@@ -1,13 +1,26 @@
-import { IsEnum, IsObject, IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { JobType } from '../job/job.type';
+import { JobQueueChildData } from './job.child.data';
+import { Type } from 'class-transformer';
 
+interface ChildJobPayloadParams {
+  childJobId: string;
+  childJobType: JobType;
+  childJobData: JobQueueChildData;
+}
 export class ChildJobPayload {
   @IsString()
-  childJobIdx: string;
+  childJobId: string;
 
   @IsEnum(JobType)
   childJobType: JobType;
 
-  @IsObject()
-  childJobData: any; // 어떤 객체든 올 수 있게 any 타입 사용
+  @Type(() => JobQueueChildData)
+  childJobData: JobQueueChildData;
+
+  constructor(params: ChildJobPayloadParams) {
+    this.childJobId = params.childJobId;
+    this.childJobType = params.childJobType;
+    this.childJobData = params.childJobData;
+  }
 }

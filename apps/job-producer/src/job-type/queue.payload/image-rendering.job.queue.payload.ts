@@ -1,16 +1,20 @@
 import { ChildJobPayload } from './job.child.payload';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsObject, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { JobQueuePayload } from './job.queue.payload';
+import { JobQueueData } from './job.queue.data';
 
 export class ImageRenderingJobQueuePayload implements JobQueuePayload {
   @IsString()
-  public jobIdx: string;
+  public jobId: string;
 
   @IsString()
-  public groupIdx: string;
+  public groupId: string;
 
   @ValidateNested({ each: true })
   @Type(() => ChildJobPayload)
   public childJobs: ChildJobPayload[];
+
+  @IsObject()
+  jobData: JobQueueData;
 }

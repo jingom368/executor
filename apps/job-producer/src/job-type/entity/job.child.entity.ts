@@ -6,7 +6,7 @@ import { JobStatus } from './job.status';
 @Schema()
 export class ChildJobEntity {
   @Prop({ required: true })
-  childJobIdx: string;
+  childJobId: string;
 
   @Prop({ required: true, enum: JobType, type: String })
   childJobType: JobType;
