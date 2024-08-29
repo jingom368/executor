@@ -6,7 +6,7 @@
     "paths": {
       "@job-executor/*": ["apps/job-executor/src/*"],
       "@job-processor/*": ["apps/job-processor/src/*"],
-      "@job-producer/*": ["apps/job-producer/src/*"],
+      "@job-api/*": ["apps/job-api/src/*"],
     }
   },
   "include": ["src/**/*"],

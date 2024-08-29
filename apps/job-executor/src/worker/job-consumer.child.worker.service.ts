@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { JobProducerRepository } from '@job-producer/job-producer.repository';
+import { JobProducerRepository } from 'apps/job-api/src/job-producer.repository';
 import { BaseWorkerService } from './job-consumer.base.worker.service';
 import { join, resolve } from 'path';
-import { JobStatus } from '@job-producer/job-type/entity/job.status';
+import { JobStatus } from 'apps/job-api/src/job-type/entity/job.status';
 import { JobPro } from '@taskforcesh/bullmq-pro';
 import { S3Service } from '@job-executor/s3/s3.service';
 import { FileUtil } from '@job-executor/util/file.util';

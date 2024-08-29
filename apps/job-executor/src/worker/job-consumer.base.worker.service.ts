@@ -1,6 +1,6 @@
 import { S3Service } from '@job-executor/s3/s3.service';
 import { FileUtil } from '@job-executor/util/file.util';
-import { JobProducerRepository } from '@job-producer/job-producer.repository';
+import { JobProducerRepository } from 'apps/job-api/src/job-producer.repository';
 import { OnModuleInit } from '@nestjs/common';
 import {
   QueuePro,

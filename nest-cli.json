@@ -29,13 +29,13 @@
         "tsConfigPath": "apps/job-processor/tsconfig.app.json"
       }
     },
-    "job-producer": {
+    "job-api": {
       "type": "application",
-      "root": "apps/job-producer",
+      "root": "apps/job-api",
       "entryFile": "main",
-      "sourceRoot": "apps/job-producer/src",
+      "sourceRoot": "apps/job-api/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/job-producer/tsconfig.app.json"
+        "tsConfigPath": "apps/job-api/tsconfig.app.json"
       }
     }
   }
