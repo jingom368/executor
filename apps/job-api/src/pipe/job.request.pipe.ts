@@ -1,29 +1,58 @@
+import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 import {
-  PipeTransform,
-  Injectable,
-  ArgumentMetadata,
-  BadRequestException,
-} from '@nestjs/common';
-import { JobPayloadFactory } from '@job-api/mapper/request.payload.factory';
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
-
+  CreateJobRequest,
+  JobRequestPayload,
+} from '@job-api/model/job/request/job.request';
+import { validate, ValidationError } from 'class-validator';
+import { plainToClass } from 'class-transformer';
+import { JobRequestPayloadFactory } from '@job-api/factory/job.request.payload.factory';
 @Injectable()
-export class JobTypeValidationPipe implements PipeTransform<any> {
+export class RequestJobValidationPipe implements PipeTransform<any> {
   constructor(
-    @InjectMapper() private readonly mapper: Mapper,
-    private readonly jobPayloadFactory: JobPayloadFactory,
+    private readonly jobRequestPayloadFactory: JobRequestPayloadFactory,
   ) {}
-  async transform(value: any, metadata: ArgumentMetadata) {
+  // createJobRequest
+  async transform(
+    value: CreateJobRequest<JobRequestPayload>,
+  ): Promise<CreateJobRequest<JobRequestPayload>> {
+    this.validateRequest(value);
+
+    const payloadInstance = this.createPayloadInstance(value);
+    await this.validatePayloadInstance(payloadInstance);
+    return value;
+  }
+
+  private validateRequest(value: CreateJobRequest<JobRequestPayload>): void {
     if (!value || !value.jobType || !value.jobRequestPayload) {
       throw new BadRequestException('Invalid job request format');
     }
+  }
 
-    const jobPayload = this.mapper.map(
-      value.jobRequestPayload,
-      value.jobRequestPayload,
-      this.jobPayloadFactory.createJobRequestToPayload(value.jobType),
+  private createPayloadInstance<T extends JobRequestPayload>(
+    value: CreateJobRequest<T>,
+  ): T {
+    const payloadType = this.jobRequestPayloadFactory.getPayloadType(
+      value.jobType,
     );
-    return value;
+    return plainToClass(payloadType, value.jobRequestPayload) as T;
+  }
+
+  private async validatePayloadInstance<T extends JobRequestPayload>(
+    payloadInstance: T,
+  ): Promise<void> {
+    const errors: ValidationError[] = await validate(payloadInstance);
+    if (errors.length > 0) {
+      const formattedErrors = this.formatErrors(errors);
+      throw new BadRequestException(formattedErrors);
+    }
+  }
+
+  private formatErrors(errors: any[]): string {
+    return errors
+      .map((error) => {
+        const constraints = Object.values(error.constraints || {}).join(', ');
+        return `Property ${error.property} failed: ${constraints}`;
+      })
+      .join('\n');
   }
 }

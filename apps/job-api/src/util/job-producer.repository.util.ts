@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { JobEntityDocument } from '../job-type/schema/job.schema';
-import { JobEntity } from '../job-type/entity/job.entity';
+import { JobEntityDocument } from '../model/job/entity/schema/job.schema';
+import { JobEntity } from '../model/job/entity/job.entity';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class JobRepositoryUtil {
   }
 
   async findChildJobById(job: JobEntity, childJobId: string) {
-    const childJob = job.childJobs.find((cj) => cj.childJobId === childJobId);
+    const childJob = job.childJobs.find((cj) => cj.jobId === childJobId);
     if (!childJob) {
       throw new Error(this.CHILD_JOB_NOT_FOUND_ERROR);
     }
