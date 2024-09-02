@@ -1,7 +1,10 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { loadProcessorsFromDir } from './module-loader';
 import { join } from 'path';
-import { ImageRenderingJobOutput } from '@job-processor/job-processor/job-output';
+import {
+  ImageRenderingJobOutput,
+  PdfRenderingJobOutput,
+} from '@job-processor/job-processor/job-output';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({})
@@ -14,7 +17,7 @@ export class ProcessorModule {
     return {
       module: ProcessorModule,
       imports: [ConfigModule.forRoot()],
-      providers: [...providers, ImageRenderingJobOutput],
+      providers: [...providers, ImageRenderingJobOutput, PdfRenderingJobOutput],
       exports: [...providers],
     };
   }

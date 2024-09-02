@@ -30,7 +30,7 @@ export class JobQueueService {
     // 큐에 넣는 작업
     await this.flowProducer.add({
       name: 'jobType',
-      queueName: 'jobQueue',
+      queueName: 'GROUP_QUEUE',
       data: jobPayload.getGroupJobInput(),
       opts: { jobId: jobPayload.getJobId() },
       children: jobPayload.childJobPayloadList.map((childJob, index) => ({
@@ -39,30 +39,10 @@ export class JobQueueService {
         queueName: childJob.getJobInput().jobType,
         opts: {
           jobId: childJob.getJobId(),
+          attempts: 3,
         },
       })),
     });
-
-    console.log(
-      JSON.stringify(
-        {
-          name: 'jobType',
-          queueName: 'jobQueue',
-          data: jobPayload.getGroupJobInput(),
-          opts: { jobId: jobPayload.getJobId() },
-          children: jobPayload.childJobPayloadList.map((childJob, index) => ({
-            name: `${index + 1}`,
-            data: childJob.getJobInput(),
-            queueName: childJob.getJobInput().jobType,
-            opts: {
-              jobId: childJob.getJobId(),
-            },
-          })),
-        },
-        null,
-        2,
-      ),
-    );
 
     return jobPayload.jobId;
   }

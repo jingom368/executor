@@ -28,6 +28,9 @@ export class PdfRenderingGroupJobPayload extends GroupJobPayload {
         },
       }),
     ];
-    this.groupJobInput = new PdfRenderingGroupJobInput(params.rasterize);
+    this.groupJobInput = new PdfRenderingGroupJobInput({
+      jobType: jobType,
+      rasterize: params.rasterize,
+    });
   }
 }

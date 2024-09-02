@@ -1,15 +1,13 @@
 import { JobProcessor } from '../job.processor';
 import { JobRegister } from '../job-processor.decorator';
-import { ImageRenderingJobOutput, JobOutput } from '../job-output';
+import { PdfRenderingJobOutput, JobOutput } from '../job-output';
 import { JobPro } from '@taskforcesh/bullmq-pro';
 import * as fs from 'fs';
 import * as path from 'path';
 
-@JobRegister('IMAGE_RENDERING')
-export class IMAGE_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
-  constructor(
-    private readonly imageRenderingJobOutput: ImageRenderingJobOutput,
-  ) {
+@JobRegister('PDF_RENDERING')
+export class PDF_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
+  constructor(private readonly pdfRenderingJobOutput: PdfRenderingJobOutput) {
     super();
   }
   public override async processJob(job: JobPro): Promise<any> {
@@ -30,7 +28,7 @@ export class IMAGE_RENDERINGJobProcessor extends JobProcessor<any, JobOutput> {
     }
 
     return new Promise((resolve) => {
-      setTimeout(() => resolve(this.imageRenderingJobOutput), 1000);
+      setTimeout(() => resolve(this.pdfRenderingJobOutput), 1000);
     });
   }
 

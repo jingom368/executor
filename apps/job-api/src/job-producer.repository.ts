@@ -29,7 +29,7 @@ export class JobProducerRepository {
     );
 
     childJob.jobStatus = childJobStatus;
-    job.updatedAt = new Date(); // 상태 업데이트 시 updatedAt도 갱신
+    job.updatedAt = new Date();
     await job.save();
   }
 }

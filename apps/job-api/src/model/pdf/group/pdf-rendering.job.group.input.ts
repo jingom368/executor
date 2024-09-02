@@ -1,10 +1,17 @@
+import { JobType } from '@job-api/model/enum/job.type';
 import { GroupJobInput } from '../../job/group/job.group.input';
 
-export class PdfRenderingGroupJobInput extends GroupJobInput {
+type PdfRenderingGroupJobInputParams = {
+  jobType: JobType;
   rasterize: boolean;
+};
+export class PdfRenderingGroupJobInput extends GroupJobInput {
+  public jobType: JobType;
+  public rasterize: boolean;
 
-  constructor(rasterize: boolean) {
+  constructor(params: PdfRenderingGroupJobInputParams) {
     super();
-    this.rasterize = rasterize;
+    this.jobType = params.jobType;
+    this.rasterize = params.rasterize;
   }
 }

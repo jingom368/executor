@@ -5,6 +5,8 @@ import { JobProcessorService } from './job-processor.service';
 
 async function bootstrap(job: JobPro) {
   const app = await NestFactory.createApplicationContext(JobProcessorModule);
+
+  // factory.get()
   const jobProcessorService = app.get(JobProcessorService);
 
   const result = await jobProcessorService.processJob(job);

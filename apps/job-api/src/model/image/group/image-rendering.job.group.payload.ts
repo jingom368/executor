@@ -30,6 +30,7 @@ export class ImageRenderingGroupJobPayload extends GroupJobPayload {
         }),
     );
     this.groupJobInput = new ImageRenderingGroupJobInput({
+      jobType: jobType,
       imgCombine: params.imgCombine,
       zip: params.zip,
     });

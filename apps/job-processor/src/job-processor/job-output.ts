@@ -23,3 +23,6 @@ export abstract class JobOutput {
 }
 @Injectable()
 export class ImageRenderingJobOutput extends JobOutput {}
+
+@Injectable()
+export class PdfRenderingJobOutput extends JobOutput {}

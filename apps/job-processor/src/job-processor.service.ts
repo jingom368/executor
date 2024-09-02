@@ -15,6 +15,5 @@ export class JobProcessorService {
     // const jobProcessor = await loadProcessor(job.data.jobType);
     const jobProcessor = this.processorFactory.get(job.data.jobType);
     return await jobProcessor.process(job);
-    // console.log('job.data', job.data);
   }
 }

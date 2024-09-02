@@ -23,7 +23,6 @@ export abstract class JobProcessor<
     if (!output.hasFile()) {
       return '';
     }
-    console.log('upload 시도', output.getLocalFilePath());
     return `s3/${jobId}.jpg`;
   }
 
@@ -31,7 +30,6 @@ export abstract class JobProcessor<
     const output: OUTPUT = await this.processJob(job);
     const uploadedFilePath = await this.uploadFile(job, output);
     output.updateFileUrl(uploadedFilePath);
-    // await output.uploadToS3(jobId, jobType, uploadedFilePath);
     return output;
   }
 }
