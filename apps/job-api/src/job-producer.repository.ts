@@ -29,7 +29,7 @@ export class JobProducerRepository {
     );
 
     childJob.jobStatus = childJobStatus;
-    job.updatedAt = new Date();
+    childJob.updatedAt = new Date();
     await job.save();
   }
 }
