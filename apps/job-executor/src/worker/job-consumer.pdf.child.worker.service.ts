@@ -1,53 +1,26 @@
 import { Module } from '@nestjs/common';
 import { JobProducerRepository } from 'apps/job-api/src/job-producer.repository';
-import { BaseWorkerService } from './job-consumer.base.worker.service';
-import { join, resolve } from 'path';
-import { JobPro } from '@taskforcesh/bullmq-pro';
 import { S3Service } from '@job-executor/s3/s3.service';
 import { FileUtil } from '@job-executor/util/file.util';
 import { ChildJobFactory } from '@job-executor/factory/job.child.factory';
+import { ChildWorkerService } from './job-consumer.child.worker.service';
 
 @Module({})
-export class PdfRenderingChildWorkerService extends BaseWorkerService {
+export class PdfRenderingChildWorkerService extends ChildWorkerService {
   constructor(
     jobProducerRepository: JobProducerRepository,
-    private readonly childJobFactory: ChildJobFactory,
+    childJobFactory: ChildJobFactory,
     s3Service: S3Service,
     fileUtil: FileUtil,
   ) {
-    super(jobProducerRepository, s3Service, fileUtil);
+    super(jobProducerRepository, childJobFactory, s3Service, fileUtil);
   }
-
-  protected getProcessor(): string {
-    const baseDir = resolve(__dirname, '../job-processor');
-    return join(baseDir, 'main.js');
-  }
-
   protected getQueueName(): string {
     return 'PDF_RENDERING';
   }
 
   protected getConcurrency(): number {
-    return 2;
-  }
-
-  protected async onJobCompleted(job: JobPro): Promise<void> {
-    const childJobHandler = this.getJobHandler(job.data.jobType);
-    await childJobHandler.handleCompletion(job);
-  }
-
-  protected async onJobFailed(job: JobPro): Promise<void> {
-    const childJobHandler = this.getJobHandler(job.data.jobType);
-    await childJobHandler.handleFailure(job);
-  }
-
-  protected async onJobActive(job: JobPro): Promise<void> {
-    const childJobHandler = this.getJobHandler(job.data.jobType);
-    await childJobHandler.handleActive(job);
-  }
-
-  private getJobHandler(jobType: string) {
-    return this.childJobFactory.getJobHandler(jobType);
+    return 3;
   }
 }
 
